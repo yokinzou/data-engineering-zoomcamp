@@ -1,3 +1,4 @@
 de-zoomcamp-env
 docker_sql/output.csv
 docker_sql/yellow_tripdata_2021-01.csv
+docker_sql/ny_taxi_postgres_data
