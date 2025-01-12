@@ -16,3 +16,5 @@ docker_sql/output.csv
 **/__pycache__/
 **/.ipynb_checkpoints/
 **/logs/
+
+/Users/yokinzou/Desktop/Data Engineering Zoomcamp/docker_sql/ny_taxi_postgres_data
