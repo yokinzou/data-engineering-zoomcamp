@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:13    # 使用 PostgreSQL 13版本的官方镜像
+    environment:          # 环境变量配置
+      POSTGRES_USER: airflow      # 设置数据库用户名
+      POSTGRES_PASSWORD: airflow  # 设置数据库密码
+      POSTGRES_DB: airflow       # 设置默认数据库名称
+    volumes:             # 数据卷配置
+      - postgres-db-volumne:/var/lib/postgresql/data    # 持久化存储数据
+    healthcheck:         # 健康检查配置
+      test: ["CMD", "pg_isready", "-U", "airflow"]     # 使用pg_isready命令检查数据库是否就绪
+      interval: 5s       # 每5秒检查一次
+      timeout: 5s        # 检查超时时间为5秒
+      retries: 5         # 最多重试5次
+    restart: always      # 容器总是自动重启
+
+# Docker运行命令示例
+docker run -it \                                              # 以交互模式运行容器
+-e POSTGRES_USER=root \                                       # 设置数据库用户名为root
+-e POSTGRES_PASSWORD=root \                                   # 设置数据库密码为root
+-e POSTGRES_DB=ny_taxi \                                      # 创建名为ny_taxi的数据库
+-v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \    # 将本地目录挂载到容器中
+-p 5432:5432 \                                               # 将容器的5432端口映射到主机的5432端口
+postgres:13                                                   # 使用PostgreSQL 13版本镜像
+
+
+
+### 先创建 network 
+docker network create pg-network
+
+### 然后把pgadmin 和 postgres 对应的 container分别 放在同一个 network 中
+
+### 再运行 pgadmin 
+docker run -it \
+ -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+ -e PGADMIN_DEFAULT_PASSWORD="root" \
+ -p 8080:80 \
+ --network=pg-network \
+ --name pg-admin \
+ dpage/pgadmin4
+
+
+ # Docker运行命令示例
+docker run -it \                                              
+-e POSTGRES_USER="root" \                                       
+-e POSTGRES_PASSWORD="root" \                                  
+-e POSTGRES_DB="ny_taxi" \                                      
+-v /Users/yokinzou/Desktop/docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \    
+-p 5432:5432 \ 
+--network=pg-network \
+--name pg-database \
+postgres:13   
+
+
+python upload-data.py \
+--user=root \
+--password=root \
+--host=localhost \
+--port=5432 \
+--db=ny_taxi \
+--table_name=yellow_taxi_trip \
+--url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+    
+
+### py docker化。-t taxi_ingest:v001:
+#-t 参数用于给镜像添加标签（tag）
+#taxi_ingest 是镜像名称
+#:v001 是版本标签，表示这是版本001
+
+docker build -t taxi_ingest:v001 .
+
+### docker 跑的时候，要确保新的 container要和 postgres db在同一个网络中
+docker run \
+--network=pg-network \
+--name=taxi_ingest \
+taxi_ingest:v001 \
+--user=root \
+--password=root \
+--host=pg-database \
+--port=5432 \
+--db=ny_taxi \
+--table_name=yellow_taxi_trip \
+--url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz

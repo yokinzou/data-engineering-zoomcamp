@@ -1,0 +1,24 @@
+### docker compose (包含的 container会处于同一个网络中）
+services:
+  ##容器名字
+  pgdatabase:
+    image: postgres:13
+    environment:
+     - POSGRES_USER=root
+     - POSTGRES_PASSWORD=root
+     - POSTGRES_DB=ny_taxi
+    ##volumes配置项用于持久化数据存储;即使容器被删除，数据依然保存在主机上
+    ##将本地主机上的./ny_taxi_postgres_data目录挂载到容器内的/var/lib/postgresql/data目录
+    ## PostgreSQL 数据库的所有数据都会被保存在/ny_taxi_postgres_data中
+    volumes:
+      - "./ny_taxi_postgres_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+  pgadmin:
+   image: 
+    dpage/pgadmin4
+   environment:
+    - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+    - PGADMIN_DEFAULT_PASSWORD=root
+   ports:
+     - "8080:80"
