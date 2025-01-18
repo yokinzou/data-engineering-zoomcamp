@@ -18,4 +18,4 @@ workflow orchestration/airflow/logs/dag_processor_manager/dag_processor_manager.
 **/logs/
 
 /Users/yokinzou/Desktop/Data Engineering Zoomcamp/docker_sql/ny_taxi_postgres_datadocker_sql/ny_taxi_postgres_data/base/16384/24590
-docker_sql/output.csv
+docker_sql/yellow_tripdata_2021-01.csv
