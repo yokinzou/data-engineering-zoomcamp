@@ -12,3 +12,23 @@
 -LOG
 ![alt text](image-4.png)
 
+## Project structure
+
+workflow_orchestration/
+├── Dockerfile           
+├── docker-compose.yaml   
+├── airflow/
+│   └── dags/
+│       ├── __init__.py
+│       └── dbt_dag.py
+│
+├── dbt/
+│   ├── models/
+│   │   ├── staging/
+│   │   ├── core/
+│   │   └── marts/
+│   ├── macros/
+│   ├── seeds/
+│   ├── tests/
+│   ├── dbt_project.yml
+│   └── profiles.yml

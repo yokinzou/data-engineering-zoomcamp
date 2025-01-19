@@ -51,6 +51,7 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    DBT_PROFILES_DIR: /opt/dbt
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
@@ -66,11 +67,15 @@ x-airflow-common:
     GCP_PROJECT_ID: 'de-project-444809'
     GCP_GCS_BUCKET: 'de-project-yokin-bucket1'
   volumes:
+   # Airflow Mount
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    # Google Cloud Credentials Mount
     - ~/.google/credentials:/.google/credentials
+    # DBT Mount
+    - ./dbt:/opt/dbt
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
