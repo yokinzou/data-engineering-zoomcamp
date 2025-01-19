@@ -8,14 +8,19 @@ ENV AIRFLOW_HOME=/opt/airflow
 USER root
 RUN apt-get update -qq && apt-get install vim -qqq
 
-
-
 # 创建 dbt 项目目录
 RUN mkdir -p /opt/dbt && \
     chown -R airflow:root /opt/dbt && \
     chmod -R g+rw /opt/dbt
 
+USER airflow
+# 安装 dbt-postgres,dbt-bigquery,dbt-core
+RUN pip install --no-cache-dir \ 
+        dbt-postgres==1.7.3 \
+        dbt-bigquery==1.7.3 \
+        dbt-core==1.7.3
 
+USER root
 # 使用更新的 Google Cloud SDK 版本
 ARG CLOUD_SDK_VERSION=458.0.0
 ENV GCLOUD_HOME=/opt/google-cloud-sdk
@@ -46,11 +51,6 @@ COPY requirements.txt .
 USER airflow
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 安装 dbt-postgres,dbt-bigquery,dbt-core
-RUN pip install --no-cache-dir \ 
-        dbt-postgres==1.7.3 \
-        dbt-bigquery==1.7.3 \
-        dbt-core==1.7.3
 
 # Ref: https://airflow.apache.org/docs/docker-stack/recipes.html
 SHELL ["/bin/bash", "-o", "pipefail", "-e", "-u", "-x", "-c"]

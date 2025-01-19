@@ -40,14 +40,25 @@ def ingest_data_to_local_postgres(user, password, host, port, db, table_name, cs
     try:
         engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
         with engine.connect() as connection:
-            # Check existing row count in table
-            result = connection.execute(f"SELECT COUNT(*) FROM {table_name}")
-            existing_rows = result.scalar()
+            # 首先检查表是否存在
+            table_exists = connection.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = %s
+                )
+            """, (table_name,)).scalar()
             
-            if existing_rows > 0:
-                task_instance.log.info(f"Found {existing_rows} existing rows in table {table_name}, will overwrite")
-                connection.execute(f"TRUNCATE TABLE {table_name}")
-                task_instance.log.info(f"Table {table_name} has been truncated")
+            if table_exists:
+                # 如果表存在，检查并清理现有数据
+                result = connection.execute(f"SELECT COUNT(*) FROM {table_name}")
+                existing_rows = result.scalar()
+                
+                if existing_rows > 0:
+                    task_instance.log.info(f"Found {existing_rows} existing rows in table {table_name}, will overwrite")
+                    connection.execute(f"TRUNCATE TABLE {table_name}")
+                    task_instance.log.info(f"Table {table_name} has been truncated")
+            else:
+                task_instance.log.info(f"Table {table_name} does not exist yet, will be created during import")
             
             task_instance.log.info("Successfully connected to PostgreSQL database, starting data import")
     except Exception as e:
@@ -118,7 +129,7 @@ with DAG(
         op_kwargs={
             "user": "airflow",
             "password": "airflow",
-            "host": "airflow-postgres-1",
+            "host": "workfloworchestration-postgres-1",
             "port": "5432",
             "db": "airflow",
             "table_name": "yellow_taxi_trips",
