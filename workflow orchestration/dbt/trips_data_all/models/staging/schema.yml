@@ -1,0 +1,69 @@
+version: 2
+
+sources:
+  - name: raw
+    database: de-project-444809
+    schema: trips_data_all
+    tables:
+      - name: yellow_tripdata_2021_01
+        description: "出租车行程数据表-2021"
+        columns:
+          - name: VendorID
+            description: "供应商ID"
+            tests:
+              - not_null
+
+          - name: tpep_pickup_datetime
+            description: "上车时间"
+            tests:
+              - not_null
+
+          - name: tpep_dropoff_datetime
+            description: "下车时间"
+            tests:
+              - not_null
+
+          - name: passenger_count
+            description: "乘客数量"
+
+          - name: trip_distance
+            description: "行程距离"
+
+          - name: RatecodeID
+            description: "费率代码"
+
+          - name: store_and_fwd_flag
+            description: "存储转发标志"
+
+          - name: PULocationID
+            description: "上车地点ID"
+
+          - name: DOLocationID
+            description: "下车地点ID"
+
+          - name: payment_type
+            description: "支付类型"
+
+          - name: fare_amount
+            description: "基本车费"
+
+          - name: extra
+            description: "额外费用"
+
+          - name: mta_tax
+            description: "MTA税"
+
+          - name: tip_amount
+            description: "小费金额"
+
+          - name: tolls_amount
+            description: "通行费"
+
+          - name: improvement_surcharge
+            description: "改善费"
+
+          - name: total_amount
+            description: "总金额"
+
+          - name: congestion_surcharge
+            description: "拥堵费"

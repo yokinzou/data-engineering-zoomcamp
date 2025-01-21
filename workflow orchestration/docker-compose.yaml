@@ -64,8 +64,8 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     GOOGLE_APPLICATION_CREDENTIALS: /.google/credentials/google_credentials.json
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://?extra__google_cloud_platform__key_path=/.google/credentials/google_credentials.json'
-    GCP_PROJECT_ID: 'de-project-444809'
-    GCP_GCS_BUCKET: 'de-project-yokin-bucket1'
+    # GCP_PROJECT_ID: 'de-project-444809'
+    # GCP_GCS_BUCKET: 'de-project-yokin-bucket1'
   volumes:
    # Airflow Mount
     - ./airflow/dags:/opt/airflow/dags
@@ -77,6 +77,12 @@ x-airflow-common:
     # DBT Mount
     - ./dbt:/opt/dbt
   user: "${AIRFLOW_UID:-50000}:0"
+  
+  entrypoint: >
+    /bin/bash -c "
+    python /opt/airflow/scripts/set_env.py &&
+    /usr/bin/dumb-init -- /entrypoint"
+
   depends_on:
     &airflow-common-depends-on
     redis:

@@ -18,7 +18,8 @@ USER airflow
 RUN pip install --no-cache-dir \ 
         dbt-postgres==1.7.3 \
         dbt-bigquery==1.7.3 \
-        dbt-core==1.7.3
+        dbt-core==1.7.3 \
+        pyyaml
 
 USER root
 # 使用更新的 Google Cloud SDK 版本

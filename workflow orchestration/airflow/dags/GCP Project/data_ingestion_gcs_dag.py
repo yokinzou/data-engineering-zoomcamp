@@ -173,7 +173,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,           # Google Cloud项目ID
                 "datasetId": BIGQUERY_DATASET,     # BigQuery数据集ID
-                "tableId": "external_table",       # 表ID
+                "tableId": "yellow_tripdata_2021-01",       # 表ID
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",         # 源数据格式为Parquet
